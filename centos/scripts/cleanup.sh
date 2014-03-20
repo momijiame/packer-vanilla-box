@@ -1,6 +1,6 @@
 #!/bin/sh
 
-package-cleanup --oldkernels --count=1
+package-cleanup --oldkernels --count=1 -y
 
 yum -y clean all
 
