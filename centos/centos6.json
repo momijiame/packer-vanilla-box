@@ -1,6 +1,7 @@
 {
   "builders": [
     {
+      "vm_name": "centos6",
       "type": "virtualbox-iso",
       "guest_os_type": "RedHat_64",
       "iso_url": "http://ftp.iij.ad.jp/pub/linux/centos/6.5/isos/x86_64/CentOS-6.5-x86_64-minimal.iso",
@@ -15,9 +16,14 @@
       "http_directory": "./http",
       "boot_command": [
         "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter><wait>"
+      ],
+      "vboxmanage": [
+        ["modifyvm", "{{.Name}}", "--memory", "512"],
+        ["modifyvm", "{{.Name}}", "--cpus", "1"]
       ]
     },
     {
+      "vm_name": "centos6",
       "type": "vmware-iso",
       "guest_os_type": "centos-64",
       "iso_url": "http://ftp.iij.ad.jp/pub/linux/centos/6.5/isos/x86_64/CentOS-6.5-x86_64-minimal.iso",
@@ -32,21 +38,25 @@
       "http_directory": "./http",
       "boot_command": [
         "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter><wait>"
-      ]
-     
+      ],
+      "vmx_data": {
+        "memsize": "512",
+        "numvcpus": "1",
+        "vhv.enable": "TRUE"
+      }
     }
   ],
   "provisioners": [
     {
       "type": "shell",
-      "execute_command": "echo 'vagrant' | sudo -E -S bash '{{.Path}}'",
+      "execute_command": "echo 'vagrant' | {{.Vars}} sudo -E -S bash '{{.Path}}'",
       "scripts": [
         "./scripts/netpersist.sh",
         "./scripts/publickey.sh",
         "./scripts/sudoers.sh",
         "./scripts/sshd.sh",
-        "./scripts/vboxkmod.sh",
-        "./scripts/vwarekmod.sh",
+        "./scripts/vbox.sh",
+        "./scripts/vfusion.sh",
         "./scripts/cleanup.sh",
         "./scripts/zerofill.sh"
       ]
@@ -54,7 +64,9 @@
   ],
   "post-processors": [
     {
-      "type": "vagrant"
+      "type": "vagrant",
+      "keep_input_artifact": false,
+      "output": "./artifacts/centos6-{{.Provider}}.box"
     }
   ]
 }
