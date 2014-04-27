@@ -29,6 +29,38 @@
         ["modifyvm", "{{.Name}}", "--memory", "512"],
         ["modifyvm", "{{.Name}}", "--cpus", "1"]
       ]
+    },
+
+    {
+      "vm_name": "ubuntu1404",
+      "type": "vmware-iso",
+      "guest_os_type": "ubuntu-64",
+      "iso_url": "http://ftp.iij.ad.jp/pub/linux/ubuntu/releases/trusty/ubuntu-14.04-server-amd64.iso",
+      "iso_checksum": "01545fa976c8367b4f0d59169ac4866c",
+      "iso_checksum_type": "md5",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "ssh_wait_timeout": "1h",
+      "disk_size": "32768",
+      "shutdown_command": "echo 'vagrant' | sudo -S shutdown -P now",
+      "tools_upload_flavor": "linux",
+      "http_directory": "./http",
+      "boot_command": [
+        "<esc><esc><enter><wait>",
+        "/install/vmlinuz noapic ",
+        "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg ",
+        "debian-installer=en_US auto locale=en_US kbd-chooser/method=us ",
+        "hostname={{ .Name }} ",
+        "fb=false debconf/frontend=noninteractive ",
+        "keyboard-configuration/modelcode=SKIP keyboard-configuration/layout=USA ",
+        "keyboard-configuration/variant=USA console-setup/ask_detect=false ",
+        "initrd=/install/initrd.gz -- <enter>"
+      ],
+      "vmx_data": {
+        "memsize": "512",
+        "numvcpus": "1",
+        "vhv.enable": "TRUE"
+      }
     }
   ],
   "provisioners": [
@@ -36,6 +68,7 @@
       "type": "shell",
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -E -S bash '{{.Path}}'",
       "scripts": [
+        "./scripts/base.sh",
         "./scripts/netpersist.sh",
         "./scripts/publickey.sh",
         "./scripts/sudoers.sh",
