@@ -4,7 +4,7 @@
       "vm_name": "centos6",
       "type": "virtualbox-iso",
       "guest_os_type": "RedHat_64",
-      "iso_url": "http://ftp.iij.ad.jp/pub/linux/centos/6.6/isos/x86_64/CentOS-6.6-x86_64-minimal.iso",
+      "iso_url": "http://ftp.iij.ad.jp/pub/linux/centos/6/isos/x86_64/CentOS-6.6-x86_64-minimal.iso",
       "iso_checksum": "4ed6c56d365bd3ab12cd88b8a480f4a62e7c66d2",
       "iso_checksum_type": "sha1",
       "ssh_username": "vagrant",
@@ -53,7 +53,6 @@
       "scripts": [
         "./scripts/netpersist.sh",
         "./scripts/publickey.sh",
-        "./scripts/sudoers.sh",
         "./scripts/sshd.sh",
         "./scripts/vbox.sh",
         "./scripts/vfusion.sh",
