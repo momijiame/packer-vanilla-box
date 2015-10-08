@@ -3,6 +3,7 @@
     {
       "vm_name": "ubuntu1404",
       "type": "virtualbox-iso",
+	  "headless": true,
       "guest_os_type": "Ubuntu_64",
       "iso_url": "http://ftp.iij.ad.jp/pub/linux/ubuntu/releases/trusty/ubuntu-14.04-server-amd64.iso",
       "iso_checksum": "01545fa976c8367b4f0d59169ac4866c",
