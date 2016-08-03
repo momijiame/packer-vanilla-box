@@ -1,0 +1,94 @@
+{
+  "builders": [
+    {
+      "vm_name": "ubuntu1604",
+      "type": "virtualbox-iso",
+	  "headless": true,
+      "guest_os_type": "Ubuntu_64",
+      "iso_url": "http://ftp.iij.ad.jp/pub/linux/ubuntu/releases/16.04/ubuntu-16.04-server-amd64.iso",
+      "iso_checksum": "70db69379816b91eb01559212ae474a36ecec9ef",
+      "iso_checksum_type": "sha1",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "ssh_wait_timeout": "1h",
+      "disk_size": "32768",
+      "shutdown_command": "echo 'vagrant' | sudo -S shutdown -P now",
+      "guest_additions_path": "VBoxGuestAdditions.iso",
+      "http_directory": "./http",
+      "boot_command": [
+        "<enter><wait><f6><esc><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "/install/vmlinuz noapic ",
+        "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg ",
+        "debian-installer=en_US auto locale=en_US kbd-chooser/method=us ",
+        "hostname={{ .Name }} ",
+        "fb=false debconf/frontend=noninteractive ",
+        "keyboard-configuration/modelcode=SKIP keyboard-configuration/layout=USA ",
+        "keyboard-configuration/variant=USA console-setup/ask_detect=false ",
+        "initrd=/install/initrd.gz -- <enter>"
+      ],
+      "vboxmanage": [
+        ["modifyvm", "{{.Name}}", "--memory", "512"],
+        ["modifyvm", "{{.Name}}", "--cpus", "1"]
+      ]
+    },
+
+    {
+      "vm_name": "ubuntu1604",
+      "type": "vmware-iso",
+      "guest_os_type": "ubuntu-64",
+      "iso_url": "http://ftp.iij.ad.jp/pub/linux/ubuntu/releases/16.04/ubuntu-16.04-server-amd64.iso",
+      "iso_checksum": "70db69379816b91eb01559212ae474a36ecec9ef",
+      "iso_checksum_type": "sha1",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "ssh_wait_timeout": "1h",
+      "disk_size": "32768",
+      "shutdown_command": "echo 'vagrant' | sudo -S shutdown -P now",
+      "tools_upload_flavor": "linux",
+      "http_directory": "./http",
+      "boot_command": [
+        "<esc><esc><enter><wait>",
+        "/install/vmlinuz noapic ",
+        "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg ",
+        "debian-installer=en_US auto locale=en_US kbd-chooser/method=us ",
+        "hostname={{ .Name }} ",
+        "fb=false debconf/frontend=noninteractive ",
+        "keyboard-configuration/modelcode=SKIP keyboard-configuration/layout=USA ",
+        "keyboard-configuration/variant=USA console-setup/ask_detect=false ",
+        "initrd=/install/initrd.gz -- <enter>"
+      ],
+      "vmx_data": {
+        "memsize": "512",
+        "numvcpus": "1",
+        "vhv.enable": "TRUE"
+      }
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "execute_command": "echo 'vagrant' | {{.Vars}} sudo -E -S bash '{{.Path}}'",
+      "scripts": [
+        "./scripts/base.sh",
+        "./scripts/netpersist.sh",
+        "./scripts/publickey.sh",
+        "./scripts/sudoers.sh",
+        "./scripts/sshd.sh",
+        "./scripts/vbox.sh",
+        "./scripts/vfusion.sh",
+        "./scripts/cleanup.sh",
+        "./scripts/zerofill.sh"
+      ]
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "vagrant",
+      "keep_input_artifact": false,
+      "output": "./artifacts/ubuntu1604-{{.Provider}}.box"
+    }
+  ]
+}
